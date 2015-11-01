@@ -1,6 +1,6 @@
 # oauth_server
-Restful API Test (For only Server Side)
-b) an API and the whole logic behind the server
+Restful API Test (For only Server Side) an API and the whole logic behind the server
+=====================================================================================
 
 For database host username and password and other constants editing you need to go to includes/config.php
 Import sql file placed on root called sql.sql and execute it in database name test_api.
