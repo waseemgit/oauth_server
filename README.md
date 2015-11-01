@@ -8,6 +8,9 @@ Restful API Test (For only Server Side) an API and the whole logic behind the se
 
 =>SQL Test you can find it in --sql_test.sql--
 
+Following is detail of All APIs with examples
+
+
 Authorize API
 =============
 
