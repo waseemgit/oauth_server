@@ -1,0 +1,43 @@
+<?php
+class access_token 
+{
+	##########################FUNCTIONS FOR AUTHORIZE STARTS#########################
+	public function codeMatched($client_id,$client_secret,$random_code,$db)
+	{
+
+		$sql	=	"SELECT COUNT(*) as total FROM users WHERE 
+							client_id 		= 	:client_id 
+						AND client_secret	=	:client_secret
+						AND random_code		=	:random_code";	
+								
+		$stmt 	= $db->prepare($sql);
+		$stmt->bindParam(':client_id', $client_id);
+		$stmt->bindParam(':client_secret', $client_secret);
+		$stmt->bindParam(':random_code', $random_code);		
+		$stmt->execute();
+		$result = 	$stmt->fetch(PDO::FETCH_ASSOC);
+		$total	=	$result['total'];
+		if($total>0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	public function updateClientCode($client_id,$code,$db)
+	{
+		$sql	=	"UPDATE users 
+							SET random_code	=	:random_code
+						WHERE client_id = :client_id";
+		
+		$stmt 	=  $db->prepare($sql);
+		$stmt->bindParam(':client_id', $client_id);
+		$stmt->bindParam(':random_code'	, $code);
+		
+		return $stmt->execute();
+	}
+	##########################FUNCTIONS FOR AUTHORIZE ENDS############################
+}
+?>

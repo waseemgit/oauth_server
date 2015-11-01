@@ -1,0 +1,176 @@
+<?php
+ini_set('display_errors',TRUE);
+error_reporting(E_ALL);
+include('includes/config.php'); 
+include('autoload.php'); 
+require 'Slim/Slim.php';
+\Slim\Slim::registerAutoloader(); 
+$app = new \Slim\Slim(); 
+
+
+
+
+$app->get('/authorize/:client_id/:client_secret',  function($client_id,$client_secret) use ($app) 
+{	//http://localhost/oauth_server/authorize/client_id/client_secret
+	// add exception  
+	try
+	{	
+		$objGeneral	=	new general();	
+		$encrypted 	= 	$objGeneral->encrypt(microtime(), ENCRYPTION_KEY);
+		$token		=	md5($encrypted);
+	
+		if($client_id	==	'')
+		{
+			$arr = array('error' => 'Client ID is missing');
+			echo $objGeneral->json($arr);
+			exit;
+		}
+		
+		if($client_secret	==	'')
+		{
+			$arr = array('error' => 'Client Secret missing');
+			echo $objGeneral->json($arr);
+			exit;
+		}
+
+		$db		=	db::getInstance();
+		$objAuthorize	=	new authorize();
+		
+		if($objAuthorize->clientExists($client_id,$client_secret,$db))// authorized
+		{
+			if(!$objAuthorize->updateClientCode($client_id,$client_secret,$token,$db))
+			{
+				$arr = array('error' => 'Query Error');
+				echo $objGeneral->json($arr);
+				exit;
+			}
+			$arr=array('access_token'=>$token);
+			echo json_encode($arr);
+			exit;
+			
+		}
+		else// Not authorized
+		{
+			$arr=array('error'=>'Not authorized');
+			echo json_encode($arr);
+			exit;
+			
+		}
+	
+	}
+	catch(PDOException $e) 
+	{
+		echo '{"error":{"text":'. $e->getMessage() .'}}';
+	}
+});
+
+
+$app->post('/access_token',  function() use ($app) 
+{	
+	// add exception  
+	try
+	{
+		
+		$client_id	= $app->request()->params('client_id');
+		$client_secret	= $app->request()->params('client_secret');											
+		$access_token	= $app->request()->params('access_token');		
+
+						
+		$objGeneral		=	new general();		
+		
+		if($client_id	==	'')
+		{
+			$arr = array('error' => 'Client ID is missing');
+			echo $objGeneral->json($arr);
+			exit;
+		}
+		if($client_secret	==	'')
+		{
+			$arr = array('error' => 'Client Secret is missing');
+			echo $objGeneral->json($arr);
+			exit;
+		}
+		if($redirect_uri	==	'')
+		{
+			$arr = array('error' => 'Redirect URI is missing');
+			echo $objGeneral->json($arr);
+			exit;
+		}		
+		if($random_code	==	'')// random session id made on client browser
+		{
+			$arr = array('error' => 'Code is missing');
+			echo $objGeneral->json($arr);
+			exit;
+		}
+		
+		
+		
+		
+		$redirect_uri	= base64_decode($app->request()->params('redirect_uri'));
+		
+		$db	=	db::getInstance();
+		$objAccessToken	=	new access_token();
+		
+		if($objAccessToken->codeMatched($client_id,$client_secret,$random_code,$db))// authorized
+		{
+			$arr = array('access_token' => $random_code);
+			echo $objGeneral->json($arr);
+			exit;
+		}
+		else// Not authorized
+		{
+			$arr = array('error' => 'You are not authorized to access our API');
+			echo $objGeneral->json($arr);
+			exit;	
+		}
+	
+	}
+	catch(PDOException $e) 
+	{
+		echo '{"error":{"text":'. $e->getMessage() .'}}';
+	}
+});		
+
+############
+$app->post('/post', function () use ($app) 
+{
+	try
+	{
+		
+		echo 'post_id='.$post_id				 			= 	 				$app->request()->params('post_id');
+		
+	}
+	catch(PDOException $e) 
+	{
+		echo '{"error":{"text":'. $e->getMessage() .'}}';
+	}
+});
+
+// PUT route
+$app->put(
+    '/put',
+    function () {
+        echo 'This is a PUT route';
+    }
+);
+
+// PATCH route
+$app->patch('/patch', function () {
+    echo 'This is a PATCH route';
+});
+
+// DELETE route
+$app->delete(
+    '/delete',
+    function () {
+        echo 'This is a DELETE route';
+    }
+);
+
+/**
+ * Step 4: Run the Slim application
+ *
+ * This method should be called last. This executes the Slim application
+ * and returns the HTTP response to the HTTP client.
+ */
+$app->run();

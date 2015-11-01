@@ -1,0 +1,38 @@
+<?php
+class authorize 
+{
+	##########################FUNCTIONS FOR AUTHORIZE STARTS#########################
+	public function clientExists($client_id,$client_secret,$db)
+	{
+		$sql	=	"SELECT COUNT(*) as total FROM users WHERE client_id = :client_id AND client_secret = :client_secret";			
+		$stmt 	= $db->prepare($sql);
+		$stmt->bindParam(':client_id'		, $client_id);
+		$stmt->bindParam(':client_secret'	, $client_secret);
+		$stmt->execute();
+		$result = $stmt->fetch(PDO::FETCH_ASSOC);
+		$total		=	$result['total'];
+		if($total>0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	public function updateClientCode($client_id,$client_secret,$token,$db)
+	{
+		$sql	=	"UPDATE users
+						SET access_token = :token
+						WHERE client_id  = :client_id AND client_secret = :client_secret";
+		
+		$stmt 	=  $db->prepare($sql);
+		$stmt->bindParam(':client_id', $client_id);
+		$stmt->bindParam(':client_secret', $client_secret);
+		$stmt->bindParam(':access_token', $token);
+		
+		return $stmt->execute();
+	}
+	##########################FUNCTIONS FOR AUTHORIZE ENDS############################
+}
+?>

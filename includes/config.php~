@@ -1,0 +1,7 @@
+<?php
+define('HOST'		,	'localhost'		);
+define('USER_NAME'	,	'root'			);
+define('PASSWORD'	,	'test'				);
+define('DATABASE_NAME'	,	'test'	);
+define("ENCRYPTION_KEY"	, 	"321!@#$%^&*123");
+?>
