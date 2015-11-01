@@ -10,6 +10,8 @@ Restful API Test (For only Server Side) an API and the whole logic behind the se
 
 Following is detail of All APIs with examples
 
+Detailed log of the API structure and functionality
+===================================================
 
 Authorize API
 =============
