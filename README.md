@@ -2,11 +2,11 @@
 Restful API Test (For only Server Side) an API and the whole logic behind the server
 =====================================================================================
 
-For database host username and password and other constants editing you need to go to includes/config.php
+=>For database host username and password and other constants editing you need to go to includes/config.php
 
-Import sql file placed on root called --sql.sql-- and execute it in database name test_api.
+=>Import sql file placed on root called --sql.sql-- and execute it in database name test_api.
 
-SQL Test you can find it in --sql_test.sql--
+=>SQL Test you can find it in --sql_test.sql--
 
 Authorize API
 =============
