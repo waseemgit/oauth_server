@@ -10,6 +10,7 @@ Authorize API
 For testing client id and client secret are following
 
 client_id : 123456789
+
 client_secret : 25f9e794323b453885f5181f1b624d0b
 
 URL     :   http://localhost/oauth_server/authorize
